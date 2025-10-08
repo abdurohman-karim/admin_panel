@@ -3,139 +3,176 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Validator;
-use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Str;
+
+/**
+ *
+ * @OA\PathItem(
+ *      path="/api/user",
+ *      @OA\Get(
+ *          operationId="getUsersList",
+ *          tags={"Users"},
+ *          summary="Get a list of users",
+ *          description="Returns a list of users",
+ *           security={
+ *           {"bearerAuth": {}}
+ *       },
+ *          @OA\Response(
+ *              response=200,
+ *              description="Successful operation",
+ *              @OA\JsonContent(ref="#/components/schemas/User")
+ *          ),
+ *          @OA\Response(
+ *              response=401,
+ *              description="Unauthenticated",
+ *          ),
+ *          @OA\Response(
+ *              response=403,
+ *              description="Forbidden"
+ *          )
+ *      ),
+ *      @OA\Post(
+ *          operationId="createUser",
+ *          tags={"Users"},
+ *          summary="Create a new user",
+ *          description="Creates a new user",
+ *           security={
+ *           {"bearerAuth": {}}
+ *       },
+ *          @OA\RequestBody(
+ *              required=true,
+ *              @OA\JsonContent(ref="#/components/schemas/User")
+ *          ),
+ *          @OA\Response(
+ *              response=201,
+ *              description="User created successfully",
+ *              @OA\JsonContent(ref="#/components/schemas/User")
+ *          ),
+ *          @OA\Response(
+ *              response=422,
+ *              description="Validation error",
+ *          )
+ *      ),
+ * ),
+ *
+ */
+
+
+
 
 class UserController extends Controller
 {
-    use ApiResponse;
-
     /**
-     * Fetch User data based on user_id
-     *
-     * @return \Illuminate\Http\JsonResponse  JSON response with success or error.
+     * Login Api.
      */
 
-    public function userData()
-    {
-
-        $user = User::select(['id', 'is_premium', 'name', 'email', 'role', 'avatar', 'number', 'address', 'lat', 'long', 'gender', 'agree_to_terms', 'created_at'])->find(auth()->user()->id);
-        if (!$user) {
-            return $this->error([], 'User Not Found', 404);
-        }
-        return $this->success($user, 'User data fetched successfully', '200');
-    }
-
-    /**
-     * Update User Infromation
-     *
-     * @param  \Illuminate\Http\Request  $request  The HTTP request with the register query.
-     * @return \Illuminate\Http\JsonResponse  JSON response with success or error.
-     */
-
-    public function userUpdate(Request $request, int $id)
-    {
-
-        $validator = Validator::make($request->all(), [
-            'avatar' => 'nullable|image|mimes:jpeg,png,gif|max:5120',
-            'name' => 'required|string|max:255',
-            'gender' => 'required|in:male,female,other',
-            'number' => 'required|numeric',
-            'address' => 'required|string',
+public function login(Request $request)
+{
+    try {
+        $request->validate([
+            'login' => 'required',
+            'password' => 'required',
         ]);
-
-        if ($validator->fails()) {
-            return $this->error([], $validator->errors()->first(), 422);
-        }
-
-        try {
-            // Find the user by ID
-            $user = User::select(['id', 'is_premium', 'name', 'email', 'role', 'avatar', 'number', 'address', 'lat', 'long', 'gender', 'agree_to_terms', 'created_at'])->find($id);
-
-            if ($request->hasFile('avatar')) {
-
-                if ($user->avatar) {
-                    $previousImagePath = public_path($user->avatar);
-                    if (file_exists($previousImagePath)) {
-                        unlink($previousImagePath);
-                    }
-                }
-
-                $image                        = $request->file('avatar');
-                $imageName                    = uploadImage($image, 'User/Avatar');
-            } else {
-                $imageName = $user->avatar;
+        $credentials = $request->only('login', 'password');
+        if ($request->filled('login')) {
+            if (filter_var($request->login, FILTER_VALIDATE_EMAIL)){
+                $loginType = 'email';
+            }elseif (filter_var($request->login, FILTER_VALIDATE_INT)){
+                $loginType = 'phone';
+            }else{
+                $loginType = 'username';
             }
-
-            // If user is not found, return an error response
+            $credentials[$loginType] = $credentials['login'];
+            unset($credentials['login']);
+            $user = User::where($loginType, $credentials[$loginType])->first();
             if (!$user) {
-                return $this->error([], "User Not Found", 404);
+                return response()->json([
+                    'status' => false,
+                    'data' => new \stdClass(),
+                    'message' => 'Login or password incorrect.',
+                ], 401);
             }
-
-            $user->name = $request->name;
-            $user->gender = $request->gender;
-            $user->number = $request->number;
-            $user->address = $request->address;
-            $user->avatar = $imageName;
-
-            $user->save();
-
-            return $this->success($user, 'User updated successfully', '200');
-        } catch (\Exception $e) {
-            return $this->error([], $e->getMessage(), 500);
+            $tokenId = Str::uuid();
+            $token = $user->createToken($tokenId)->plainTextToken;
+            $user->token = $token;
+            return response()->json([
+                'status' => true,
+                'data' => $user,
+                'message' => 'Success.'
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'data' => new \stdClass(),
+                'message' => 'Login field is required.',
+            ], 400);
         }
-    }
-
-    /**
-     * Logout the authenticated user's account
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse JSON response with success or error.
-     */
-    public function logoutUser()
-    {
-
-        try {
-            auth()->guard('api')->logout();
-
-            return $this->success([], 'Successfully logged out', '200');
-        } catch (\Exception $e) {
-            return $this->error([], $e->getMessage(), 500);
-        }
-
-
-    }
-
-
-    /**
-     * Delete the authenticated user's account
-     *
-     * @return \Illuminate\Http\JsonResponse JSON response with success or error.
-     */
-    public function deleteUser()
-    {
-        try {
-            // Get the authenticated user
-            $user = auth()->user();
-
-            // Delete the user's avatar if it exists
-            if ($user->avatar) {
-                $previousImagePath = public_path($user->avatar);
-                if (file_exists($previousImagePath)) {
-                    unlink($previousImagePath);
-                }
-            }
-
-            // Delete the user
-            $user->delete();
-
-            return $this->success([], 'User deleted successfully', '200');
-        } catch (\Exception $e) {
-            return $this->error([], $e->getMessage(), 500);
-        }
+    } catch (\Exception $exception) {
+        return response()->json([
+            'status' => false,
+            'data' => new \stdClass(),
+            'message' => $exception->getMessage(),
+        ]);
     }
 }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return 'Hello';
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}
+

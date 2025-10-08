@@ -2,45 +2,52 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Carbon\Carbon;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements JWTSubject
+/**
+ * @OA\Schema(
+ *     schema="User",
+ *     title="User",
+ *     description="User model",
+ *     @OA\Property(property="id", type="integer", format="int64", description="User ID"),
+ *     @OA\Property(property="name", type="string", description="User name"),
+ *     @OA\Property(property="email", type="string", format="email", description="User email"),
+ *     @OA\Property(property="created_at", type="string", format="date-time", description="User creation timestamp"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time", description="User update timestamp"),
+ * )
+ */
+
+class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-
-      /**
-     * Get the identifier that will be stored in the JWT subject claim.
-     *
-     * @return mixed
-     */
-    public function getJWTIdentifier()
-    {
-        return $this->getKey(); // Return the primary key of the user (id)
-    }
+    use HasFactory, Notifiable, HasRoles, HasApiTokens;
 
     /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
+     * The attributes that are mass assignable.
      *
-     * @return array
+     * @var array
      */
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
-
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'username',
+        'phone',
+        'email',
+        'password',
+        'dob',
+        'avatar',
+        'google_id',
+        'facebook_id',
+        'github_id',
+    ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be hidden for arrays.
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $hidden = [
         'password',
@@ -48,15 +55,11 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * The attributes that should be cast.
+     * The attributes that should be cast to native types.
      *
-     * @var array<string, string>
+     * @var array
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'agree_to_terms' => 'boolean',
-        'is_premium' => 'boolean',
-        'id' => 'integer',
     ];
-
 }

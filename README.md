@@ -1,51 +1,150 @@
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+
 <p align="center">
-    <h1 align="center">❤️Laravel Stater Kit❤️</h1>
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Introduction 😍
+## About Laravel 10
 
-<p> A Laravel stater kit with a awesome admin panel setup, user login & logout, registration, status, delete, profile settings and system information and many more. </p>
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## Contributor 😎
+#
 
--   <a href="https://github.com/mizanurmillon" target="_blank">Md Mizanur Rahman</a>
 
-## Installation 🤷‍♂
+<a href="https://payme.uz/@longevity" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
-To Install & Run This Project You Have To Follow Thoose Following Steps:
 
-```sh
-git clone https://github.com/mizanurmillon/Laravel-Stater-Kit-Skote.git
+## Featured Authentication
+
+- [Google](http://google.com) - Auth
+- [Facebook](http://facebook.com) - Auth
+- [Github](http://github.com) - Auth
+- [Gitlab](http://gitlab.com) - Auth remaining
+- [Twitter](http://twitter.com) - Auth remaining
+- [Linkedin](http://linkedin.com) - Auth remaining
+- [Apple](http://apple.com) - Auth remaining
+
+## Featured Payments
+
+- [Payme](http://payme.uz) - Merchant
+- [Click](http://click.uz) - Merchant
+- [Oson](http://click.uz) - Merchant
+- [Uzcard](http://uzcard.uz) - Merchant
+- [Paynet](http://paynet.uz) - Merchant
+- [Stripe](https://stripe.com/) - Merchant(Subscribe)
+
+## Featured Languages
+
+-  Uzbek
+-  Uzbek Krill
+-  Russian
+-  English
+-  Italian
+-  Spanish
+-  German
+
+
+## Role documentation
+
+- [Laravel-permission](https://spatie.be/docs/laravel-permission/v6/introduction) -Spatie Laravel-permission
+
+
+## Installation
+
+You can clone from GitLab:
+
+```bash
+git clone git@gitlab.com:IslamAbdurahman/skote_panel_with_spatie_click_payme_laravel.git
 ```
 
-```sh
-cd Laravel-Stater-Kit-Skote
+You can clone from GitHub:
+
+```bash
+git clone git@github.com:IslamAbdurahman/skote_panel_with_spatie_click_payme_laravel.git
 ```
 
-```sh
-composer update
+You can install composer and node modules:
+
+```bash
+composer install
+npm install
 ```
 
-Open your `.env` file and change the database name (`DB_DATABASE`) to whatever you have, username (`DB_USERNAME`) and password (`DB_PASSWORD`) field correspond to your configuration
 
-```sh
+Create storage link and generate key:
+
+```bash
+php artisan storage:link
 php artisan key:generate
 ```
 
-```sh
-php artisan migrate:fresh --seed
+Migrate tables with seeds and payment settings:
+
+```bash
+php artisan migrate --seed
+php artisan db:seed --class="Goodoneuz\PayUz\database\seeds\PayUzSeeder"
 ```
 
-```sh
-php artisan optimize:clear
+### Default user
+
+```
+User : admin@gmail.com
+Password : 123456
 ```
 
-```sh
-php artisan serve
+## Swagger Usage
+Run this code to generate Swagger
+
+```bash
+php artisan l5-swagger:generate
 ```
 
-For Admin Login `http://127.0.0.1:8000/admin` <br>
-Admin gmail = `admin@admin.com` & password = `12345678`
+## Payment Usage
+------
+Placing routes for service in web.php
 
-For User Login `http://127.0.0.1:8000/admin` <br>
-Admin gmail = `user@user.com` & password = `12345678`
+```php
+
+//handle requests from payment system
+Route::any('/handle/{paysys}',function($paysys){
+    (new Goodoneuz\PayUz\PayUz)->driver($paysys)->handle();
+});
+
+//redirect to payment system or payment form
+Route::any('/pay/{paysys}/{key}/{amount}',function($paysys, $key, $amount){
+	$model = Goodoneuz\PayUz\Services\PaymentService::convertKeyToModel($key);
+    $url = request('redirect_url','/'); // redirect url after payment completed
+    $pay_uz = new Goodoneuz\PayUz\PayUz;
+    $pay_uz
+    	->driver($paysys)
+    	->redirect($model, $amount, 860, $url);
+});
+```
+
+### Security
+
+If you discover any security related issues, please email abdurahmanislam304@gmail.com instead of using the issue tracker.
+
+
+## Additional URL
+
+- Telescope --- https://your-domain.com/telescope
+- Swagger --- https://your-domain.com/api/documentation
+
+
+## Credits
+
+- [GitHub](https://github.com/islamabdurahman)
+- [GitLab](https://gitlab.com/islamabdurahman)
+####
+- [TouTube](https://www.youtube.com/@IslamAbdurahman)
+- [Telegram](https://t.me/LiveLongevity)
+####
+- [All Contributors](../../contributors)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
