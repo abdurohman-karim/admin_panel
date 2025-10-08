@@ -7,144 +7,55 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel 10
+## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-#
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-<a href="https://payme.uz/@longevity" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+## Learning Laravel
 
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-## Featured Authentication
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-- [Google](http://google.com) - Auth
-- [Facebook](http://facebook.com) - Auth
-- [Github](http://github.com) - Auth
-- [Gitlab](http://gitlab.com) - Auth remaining
-- [Twitter](http://twitter.com) - Auth remaining
-- [Linkedin](http://linkedin.com) - Auth remaining
-- [Apple](http://apple.com) - Auth remaining
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Featured Payments
+## Laravel Sponsors
 
-- [Payme](http://payme.uz) - Merchant
-- [Click](http://click.uz) - Merchant
-- [Oson](http://click.uz) - Merchant
-- [Uzcard](http://uzcard.uz) - Merchant
-- [Paynet](http://paynet.uz) - Merchant
-- [Stripe](https://stripe.com/) - Merchant(Subscribe)
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-## Featured Languages
+### Premium Partners
 
--  Uzbek
--  Uzbek Krill
--  Russian
--  English
--  Italian
--  Spanish
--  German
+- **[Vehikl](https://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Redberry](https://redberry.international/laravel-development)**
+- **[Active Logic](https://activelogic.com)**
 
+## Contributing
 
-## Role documentation
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-- [Laravel-permission](https://spatie.be/docs/laravel-permission/v6/introduction) -Spatie Laravel-permission
+## Code of Conduct
 
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Installation
+## Security Vulnerabilities
 
-You can clone from GitLab:
-
-```bash
-git clone git@gitlab.com:IslamAbdurahman/skote_panel_with_spatie_click_payme_laravel.git
-```
-
-You can clone from GitHub:
-
-```bash
-git clone git@github.com:IslamAbdurahman/skote_panel_with_spatie_click_payme_laravel.git
-```
-
-You can install composer and node modules:
-
-```bash
-composer install
-npm install
-```
-
-
-Create storage link and generate key:
-
-```bash
-php artisan storage:link
-php artisan key:generate
-```
-
-Migrate tables with seeds and payment settings:
-
-```bash
-php artisan migrate --seed
-php artisan db:seed --class="Goodoneuz\PayUz\database\seeds\PayUzSeeder"
-```
-
-### Default user
-
-```
-User : admin@gmail.com
-Password : 123456
-```
-
-## Swagger Usage
-Run this code to generate Swagger
-
-```bash
-php artisan l5-swagger:generate
-```
-
-## Payment Usage
-------
-Placing routes for service in web.php
-
-```php
-
-//handle requests from payment system
-Route::any('/handle/{paysys}',function($paysys){
-    (new Goodoneuz\PayUz\PayUz)->driver($paysys)->handle();
-});
-
-//redirect to payment system or payment form
-Route::any('/pay/{paysys}/{key}/{amount}',function($paysys, $key, $amount){
-	$model = Goodoneuz\PayUz\Services\PaymentService::convertKeyToModel($key);
-    $url = request('redirect_url','/'); // redirect url after payment completed
-    $pay_uz = new Goodoneuz\PayUz\PayUz;
-    $pay_uz
-    	->driver($paysys)
-    	->redirect($model, $amount, 860, $url);
-});
-```
-
-### Security
-
-If you discover any security related issues, please email abdurahmanislam304@gmail.com instead of using the issue tracker.
-
-
-## Additional URL
-
-- Telescope --- https://your-domain.com/telescope
-- Swagger --- https://your-domain.com/api/documentation
-
-
-## Credits
-
-- [GitHub](https://github.com/islamabdurahman)
-- [GitLab](https://gitlab.com/islamabdurahman)
-####
-- [TouTube](https://www.youtube.com/@IslamAbdurahman)
-- [Telegram](https://t.me/LiveLongevity)
-####
-- [All Contributors](../../contributors)
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
