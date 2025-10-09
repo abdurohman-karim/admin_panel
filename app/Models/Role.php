@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Traits\HasPartnerScope;
 use App\Traits\Searchable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    use HasFactory, Searchable;
+    use Searchable;
     protected $fillable = ['name', 'guard_name'];
 
     public function users()
@@ -43,11 +41,6 @@ class Role extends Model
         foreach ($this->users as $user) {
             $user->clearPermissionsCache();
         }
-    }
-
-    public function hasPermissionTo()
-    {
-
     }
 
     public function syncPermissions($permissions)

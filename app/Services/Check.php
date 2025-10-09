@@ -23,9 +23,9 @@ class Check
         return Session::has('is_admin') && Session::get('is_admin') == 1;
     }
 
-    static function hasRole($user_id, $partner_uuid, $role)
+    static function hasRole($user_id, $role)
     {
-        $user = \App\Models\User::where('id', $user_id)->where('partner_uuid', $partner_uuid)->first();
+        $user = \App\Models\User::where('id', $user_id)->first();
         return $user->roles()->where('name', $role)->exists();
     }
 }

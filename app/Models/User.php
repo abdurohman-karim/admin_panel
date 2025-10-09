@@ -21,6 +21,7 @@ class User extends Authenticatable
         'email',
         'password',
         'password_expires_at',
+        'is_admin'
     ];
 
     protected $hidden = [
@@ -50,7 +51,7 @@ class User extends Authenticatable
         $this->save();
         return $this->theme;
     }
-    public function roles()
+    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Role::class);
     }
