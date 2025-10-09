@@ -10,19 +10,16 @@ class Permission extends Model
     use HasFactory;
     protected $fillable = ['name', 'guard_name'];
 
-    // Roles that have the permission
     public function roles()
     {
         return $this->belongsToMany(Role::class);
     }
 
-    // Users that have the permission (optional)
     public function users()
     {
         return $this->belongsToMany(User::class);
     }
 
-    // Assign permission to a role
     public function assignRole($role)
     {
         if (is_string($role)) {
@@ -31,7 +28,6 @@ class Permission extends Model
         $this->roles()->syncWithoutDetaching($role);
     }
 
-    // Remove permission from a role
     public function removeRole($role)
     {
         if (is_string($role)) {

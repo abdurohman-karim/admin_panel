@@ -9,16 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    use HasFactory, HasPartnerScope, Searchable;
-    protected $fillable = ['partner_uuid','name', 'guard_name'];
+    use HasFactory, Searchable;
+    protected $fillable = ['name', 'guard_name'];
 
-    // Users that belong to the role
     public function users()
     {
         return $this->belongsToMany(User::class);
     }
 
-    // Permissions that belong to the role
     public function permissions()
     {
         return $this->belongsToMany(Permission::class, 'permission_role');
@@ -32,7 +30,6 @@ class Role extends Model
         $this->permissions()->syncWithoutDetaching($permission);
     }
 
-    // Remove permission from role
     public function revokePermissionTo($permission)
     {
         if (is_string($permission)) {
@@ -41,7 +38,6 @@ class Role extends Model
         $this->permissions()->detach($permission);
     }
 
-    // Refresh permissions cache for users with this role
     public function refreshUsersCache()
     {
         foreach ($this->users as $user) {
@@ -57,10 +53,5 @@ class Role extends Model
     public function syncPermissions($permissions)
     {
         $this->permissions()->sync($permissions);
-    }
-
-    public function partner()
-    {
-        return $this->belongsTo(Partner::class, 'partner_uuid', 'partner_uuid');
     }
 }
